@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -18,7 +19,8 @@ SEEN_PATH = Path("data/seen_papers.json")
 def main() -> None:
     args = parse_args()
     now = datetime.now(PACIFIC)
-    if not args.force and not _is_report_time(now):
+    force_run = args.force or os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch"
+    if not force_run and not _is_report_time(now):
         print(f"Not report time in America/Los_Angeles: {now.isoformat()}")
         return
 
