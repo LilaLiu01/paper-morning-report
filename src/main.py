@@ -23,6 +23,9 @@ def main() -> None:
     if not force_run and not _is_report_time(now):
         print(f"Not report time in America/Los_Angeles: {now.isoformat()}")
         return
+    if not force_run and report_exists_for_date(now):
+        print(f"Report already exists for {now.date()} in paper_found/.")
+        return
 
     config = RuntimeConfig()
     seen_ids = load_seen_ids()
@@ -58,6 +61,11 @@ def save_seen_ids(seen_ids: set[str]) -> None:
     SEEN_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {"seen": sorted(seen_ids)}
     SEEN_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def report_exists_for_date(now: datetime) -> bool:
+    report_dir = Path("paper_found")
+    return any(report_dir.glob(f"paper_report_{now.strftime('%Y-%m-%d')}_*.pdf"))
 
 
 def _is_report_time(now: datetime) -> bool:

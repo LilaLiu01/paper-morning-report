@@ -3,11 +3,12 @@ name: Morning paper report
 on:
   workflow_dispatch:
   schedule:
-    # GitHub schedules run in UTC. These two entries cover 8 AM Pacific
-    # across standard time and daylight saving time. The script exits unless
-    # the current America/Los_Angeles time is Tuesday or Friday at 8 AM.
-    - cron: "0 15 * * 2,5"
-    - cron: "0 16 * * 2,5"
+    # GitHub schedules run in UTC. These entries cover the 8 AM Pacific hour
+    # across daylight saving and standard time. Multiple ticks make the job
+    # resilient to GitHub's occasional top-of-hour schedule delays or drops;
+    # src/main.py exits after one report has been written for the local date.
+    - cron: "0,15,30,45 15 * * 2,5"
+    - cron: "0,15,30,45 16 * * 2,5"
 
 permissions:
   contents: write

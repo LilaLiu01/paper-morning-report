@@ -26,7 +26,7 @@ No email secrets are needed. The only optional secret is:
 
 ## Schedule
 
-The workflow runs on Tuesdays and Fridays. Because GitHub cron uses UTC, the workflow has two UTC schedules and `src/main.py` exits unless the current Los Angeles time is Tuesday or Friday at 8:00 AM.
+The workflow runs on Tuesdays and Fridays. Because GitHub cron uses UTC, the workflow has UTC schedules that cover the 8:00 AM Pacific hour. `src/main.py` exits unless the current Los Angeles time is Tuesday or Friday at 8 AM, and it will create at most one report per local date.
 
 You can also run it manually from the GitHub Actions tab with **Run workflow**.
 
