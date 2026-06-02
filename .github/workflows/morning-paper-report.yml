@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  send-report:
+  build-report:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -29,25 +29,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Build and email report
+      - name: Build PDF report
         env:
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
         run: python -m src.main
 
-      - name: Commit seen-paper history
+      - name: Commit PDF report and seen-paper history
         run: |
-          if git diff --quiet data/seen_papers.json; then
-            echo "No new seen-paper history to commit."
+          if [ -z "$(git status --porcelain data/seen_papers.json paper_found)" ]; then
+            echo "No report or seen-paper history changes to commit."
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/seen_papers.json
-            git commit -m "Update seen paper history"
+            git add data/seen_papers.json paper_found
+            git commit -m "Add morning paper report"
             git push
           fi

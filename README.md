@@ -1,8 +1,8 @@
 # Morning Paper Report
 
-Scheduled GitHub Actions pipeline that emails Lila a Tuesday/Friday 8:00 AM Pacific report of recent papers related to visual working memory, modeling working memory, visual search, and current project themes.
+Scheduled GitHub Actions pipeline that saves a Tuesday/Friday 8:00 AM Pacific PDF report of recent papers related to visual working memory, modeling working memory, visual search, and current project themes.
 
-The report selects at most 5 papers from the last 5 years and stores selected paper IDs in `data/seen_papers.json` so future reports do not repeat the same papers.
+The report selects at most 5 papers from the last 5 years, writes the PDF into `paper_found/`, and stores selected paper IDs in `data/seen_papers.json` so future reports do not repeat the same papers.
 
 ## Sources
 
@@ -18,19 +18,11 @@ The report selects at most 5 papers from the last 5 years and stores selected pa
 
 ## GitHub Secrets
 
-Create these repository secrets in GitHub:
+No email secrets are needed. The only optional secret is:
 
 | Secret | Example |
 | --- | --- |
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_USERNAME` | your Gmail address |
-| `SMTP_PASSWORD` | Gmail app password, not your normal account password |
-| `EMAIL_FROM` | your Gmail address |
-| `EMAIL_TO` | `sliu485@ucr.edu` |
 | `SERPAPI_API_KEY` | optional |
-
-For Gmail, create an app password in your Google account security settings. Do not commit passwords to this repository.
 
 ## Schedule
 
@@ -44,8 +36,5 @@ You can also run it manually from the GitHub Actions tab with **Run workflow**.
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
 python -m src.main --force --dry-run
 ```
-
-Remove `--dry-run` only when email secrets are configured.

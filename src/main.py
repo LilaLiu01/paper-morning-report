@@ -7,9 +7,9 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import PACIFIC, RuntimeConfig
-from .email_report import render_report, send_email
 from .keyword_sources import build_keywords
 from .rank_papers import select_papers
+from .report_pdf import write_pdf_report
 from .search_sources import search_all_sources
 
 
@@ -29,14 +29,8 @@ def main() -> None:
     keywords = build_keywords(config)
     candidates = search_all_sources(keywords, config)
     selected = select_papers(candidates, keywords, seen_ids, config)
-    html_body = render_report(selected, dry_run=args.dry_run)
-
-    if args.dry_run:
-        Path("report_preview.html").write_text(html_body, encoding="utf-8")
-        print(f"Dry run selected {len(selected)} papers. Wrote report_preview.html")
-    else:
-        send_email(html_body, len(selected))
-        print(f"Sent report with {len(selected)} papers.")
+    pdf_path = write_pdf_report(selected, dry_run=args.dry_run)
+    print(f"Selected {len(selected)} papers. Wrote {pdf_path}")
 
     if selected and not args.no_update_seen:
         save_seen_ids(seen_ids | {paper.stable_id() for paper in selected})
@@ -45,7 +39,7 @@ def main() -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="Run even when it is not Tuesday/Friday 8 AM Pacific.")
-    parser.add_argument("--dry-run", action="store_true", help="Write report_preview.html instead of sending email.")
+    parser.add_argument("--dry-run", action="store_true", help="Write a preview PDF with a dry-run suffix.")
     parser.add_argument("--no-update-seen", action="store_true", help="Do not update data/seen_papers.json.")
     return parser.parse_args()
 
