@@ -16,9 +16,9 @@ from .models import Paper
 REPORT_DIR = Path("paper_found")
 
 
-def write_pdf_report(papers: list[Paper], dry_run: bool = False) -> Path:
+def write_pdf_report(papers: list[Paper], dry_run: bool = False, report_time: datetime | None = None) -> Path:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    now = datetime.now(PACIFIC)
+    now = report_time or datetime.now(PACIFIC)
     suffix = "_dry_run" if dry_run else ""
     path = REPORT_DIR / f"paper_report_{now.strftime('%Y-%m-%d_%H%M%S')}{suffix}.pdf"
 
