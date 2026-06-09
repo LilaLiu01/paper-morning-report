@@ -68,7 +68,11 @@ def _extract_phrases(text: str) -> list[str]:
     for n in (2, 3, 4):
         for i in range(0, max(0, len(words) - n + 1)):
             phrase = " ".join(words[i : i + n])
-            if any(anchor in phrase for anchor in ("attention", "search", "precision", "fidelity", "model", "egocentric", "prediction", "intelligence", "creativity")):
+            if any(anchor in phrase for anchor in (
+                "attention", "search", "precision", "fidelity", "model",
+                "representation", "neural", "network", "deep", "learning",
+                "transformer", "recurrent", "egocentric", "prediction", "ai",
+            )):
                 counts[phrase] += 1
     return [phrase for phrase, _ in counts.most_common(30)]
 

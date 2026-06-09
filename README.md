@@ -1,8 +1,8 @@
 # Morning Paper Report
 
-Scheduled GitHub Actions pipeline that saves a Tuesday/Friday 8:00 AM Pacific PDF report of recent papers related to visual working memory, modeling working memory, visual search, and current project themes.
+Scheduled GitHub Actions pipeline that saves a Tuesday/Friday 8:00 AM Pacific PDF report of recent papers related to visual working memory, working-memory representation, working-memory modeling/modelling, neural-network memory models, AI for human memory, visual search, and current project themes.
 
-The report selects at most 5 papers from the last 5 years, writes the PDF into `paper_found/`, and stores selected paper IDs in `data/seen_papers.json` so future reports do not repeat the same papers.
+The report selects at most 5 papers from a rolling recent-5-year window, writes the PDF into `paper_found/`, and stores selected paper IDs in `data/seen_papers.json` so future reports do not repeat the same papers.
 
 ## Sources
 
@@ -26,7 +26,7 @@ No email secrets are needed. The only optional secret is:
 
 ## Schedule
 
-The workflow runs on Tuesdays and Fridays. Because GitHub cron uses UTC, the workflow has UTC schedules that cover the 8:00 AM Pacific hour. `src/main.py` exits unless the current Los Angeles time is Tuesday or Friday at 8 AM, and it will create at most one report per local date.
+The workflow runs on Tuesdays and Fridays. Because GitHub cron uses UTC and can be delayed, the workflow has UTC schedules that cover the 8:00 AM Pacific hour. `src/main.py` accepts delayed scheduled runs between 8 AM and noon Pacific, and it will create at most one report per local date.
 
 You can also run it manually from the GitHub Actions tab with **Run workflow**.
 

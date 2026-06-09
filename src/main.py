@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .config import PACIFIC, RuntimeConfig
@@ -20,7 +20,8 @@ def main() -> None:
     args = parse_args()
     now = datetime.now(PACIFIC)
     force_run = args.force or os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch"
-    if not force_run and not _is_report_time(now):
+    scheduled_run = is_scheduled_report_run(now)
+    if not force_run and not scheduled_run and not _is_report_time(now):
         print(f"Not report time in America/Los_Angeles: {now.isoformat()}")
         return
     if not force_run and report_exists_for_date(now):
@@ -66,6 +67,42 @@ def save_seen_ids(seen_ids: set[str]) -> None:
 def report_exists_for_date(now: datetime) -> bool:
     report_dir = Path("paper_found")
     return any(report_dir.glob(f"paper_report_{now.strftime('%Y-%m-%d')}_*.pdf"))
+
+
+def is_scheduled_report_run(now: datetime) -> bool:
+    if os.getenv("GITHUB_EVENT_NAME") != "schedule":
+        return False
+    if now.weekday() not in {1, 4}:
+        return False
+    if now.hour < 8 or now.hour > 12:
+        return False
+
+    event_schedule = os.getenv("GITHUB_EVENT_SCHEDULE", "")
+    scheduled_hours = _cron_hours(event_schedule)
+    if not scheduled_hours:
+        return _is_report_time(now)
+
+    candidate_utc_hours = {
+        datetime(now.year, now.month, now.day, 8, tzinfo=PACIFIC)
+        .astimezone(timezone.utc)
+        .hour,
+        15,
+        16,
+    }
+    return bool(candidate_utc_hours & scheduled_hours)
+
+
+def _cron_hours(cron: str) -> set[int]:
+    fields = cron.split()
+    if len(fields) < 2:
+        return set()
+    hours: set[int] = set()
+    for part in fields[1].split(","):
+        try:
+            hours.add(int(part))
+        except ValueError:
+            continue
+    return hours
 
 
 def _is_report_time(now: datetime) -> bool:

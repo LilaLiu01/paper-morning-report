@@ -36,7 +36,8 @@ def write_pdf_report(papers: list[Paper], dry_run: bool = False) -> Path:
         Paragraph(f"Morning Paper Report - {now.strftime('%A, %B %d, %Y')}", styles["Title"]),
         Paragraph(
             "Recent, non-repeated papers matched to visual working memory, visual search, modeling, "
-            "SEM/intelligence/creativity, and egocentric predictive-coding memory themes.",
+            "working-memory representation, neural-network memory models, AI for human memory, "
+            "and egocentric predictive-coding memory themes.",
             styles["Body"],
         ),
         Spacer(1, 0.18 * inch),

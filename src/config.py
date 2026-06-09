@@ -9,16 +9,23 @@ PACIFIC = ZoneInfo("America/Los_Angeles")
 
 BASE_TOPICS = [
     "visual working memory",
-    "modeling working memory",
+    "working memory representation",
+    "working memory modeling",
+    "working memory modelling",
+    "computational models of working memory",
+    "neural networks in working memory",
+    "artificial intelligence for human memory",
+    "AI models of human memory",
     "visual search",
     "working memory fidelity flexibility visual search",
-    "working memory intelligence creativity structural equation model",
     "egocentric vision natural video statistics predictive coding memory precision",
 ]
 
 PROJECT_CONTEXT = [
     "working memory fidelity and flexibility in visual search",
-    "structural equation modeling of working memory intelligence and creativity",
+    "working memory representation precision fidelity capacity and resource allocation",
+    "neural network models recurrent networks transformers and deep learning models of human working memory",
+    "AI for human memory computational cognitive models biologically plausible memory systems",
     "human-aligned egocentric vision benchmark natural video statistics predictive coding memory behavior mnemonic precision strength",
 ]
 
@@ -40,4 +47,4 @@ class RuntimeConfig:
 
     @property
     def earliest_year(self) -> int:
-        return datetime.now(PACIFIC).year - self.recent_years + 1
+        return datetime.now(PACIFIC).year - self.recent_years

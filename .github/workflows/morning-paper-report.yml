@@ -32,6 +32,7 @@ jobs:
 
       - name: Build PDF report
         env:
+          GITHUB_EVENT_SCHEDULE: ${{ github.event.schedule }}
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
         run: python -m src.main
 

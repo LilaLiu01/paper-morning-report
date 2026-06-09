@@ -33,7 +33,7 @@ def search_all_sources(keywords: list[str], config: RuntimeConfig) -> list[Paper
 def search_arxiv(query: str, config: RuntimeConfig) -> list[Paper]:
     url = (
         "https://export.arxiv.org/api/query?"
-        f"search_query=all:{quote_plus(query)}&start=0&max_results=8"
+        f"search_query=all:{quote_plus(query)}&start=0&max_results=20"
         "&sortBy=submittedDate&sortOrder=descending"
     )
     feed = _get_feed(url, config)
@@ -60,7 +60,7 @@ def search_pubmed(query: str, config: RuntimeConfig) -> list[Paper]:
     try:
         ids_response = requests.get(
             ids_url,
-            params={"db": "pubmed", "term": term, "retmode": "json", "retmax": 8, "sort": "pub date"},
+            params={"db": "pubmed", "term": term, "retmode": "json", "retmax": 20, "sort": "relevance"},
             timeout=config.request_timeout,
             headers={"User-Agent": config.user_agent},
         )
@@ -104,8 +104,7 @@ def search_europe_pmc(query: str, config: RuntimeConfig) -> list[Paper]:
             params={
                 "query": f'({query}) FIRST_PDATE:[{config.earliest_year}-01-01 TO 3000-12-31]',
                 "format": "json",
-                "pageSize": 8,
-                "sort": "P_PDATE_D",
+                "pageSize": 20,
             },
             timeout=config.request_timeout,
             headers={"User-Agent": config.user_agent},
@@ -138,9 +137,7 @@ def search_crossref(query: str, config: RuntimeConfig) -> list[Paper]:
             params={
                 "query.bibliographic": query,
                 "filter": f"from-pub-date:{config.earliest_year}-01-01",
-                "sort": "published",
-                "order": "desc",
-                "rows": 8,
+                "rows": 20,
             },
             timeout=config.request_timeout,
             headers={"User-Agent": config.user_agent},
@@ -174,7 +171,7 @@ def search_semantic_scholar(query: str, config: RuntimeConfig) -> list[Paper]:
             "https://api.semanticscholar.org/graph/v1/paper/search",
             params={
                 "query": query,
-                "limit": 8,
+                "limit": 20,
                 "year": f"{config.earliest_year}-",
                 "fields": "title,abstract,authors,year,venue,url,externalIds,publicationDate",
             },
@@ -209,8 +206,7 @@ def search_osf(query: str, config: RuntimeConfig) -> list[Paper]:
             "https://api.osf.io/v2/preprints/",
             params={
                 "filter[title]": query,
-                "page[size]": 8,
-                "sort": "-date_published",
+                "page[size]": 20,
             },
             timeout=config.request_timeout,
             headers={"User-Agent": config.user_agent},
@@ -247,7 +243,7 @@ def search_google_scholar_serpapi(query: str, config: RuntimeConfig) -> list[Pap
                 "q": query,
                 "as_ylo": config.earliest_year,
                 "api_key": api_key,
-                "num": 8,
+                "num": 20,
             },
             timeout=config.request_timeout,
             headers={"User-Agent": config.user_agent},
@@ -278,10 +274,15 @@ def _make_queries(keywords: list[str]) -> list[str]:
     focused = [
         "visual working memory visual search",
         "working memory fidelity precision",
+        "working memory representation",
         "working memory computational model",
+        "working memory modelling neural network",
+        "neural networks human working memory",
+        "artificial intelligence human memory",
+        "AI models human memory",
         "predictive coding memory natural video egocentric vision",
     ]
-    return list(dict.fromkeys(focused + preferred))[:14]
+    return list(dict.fromkeys(focused + preferred))[:18]
 
 
 def _dedupe_papers(papers: Iterable[Paper]) -> list[Paper]:

@@ -10,18 +10,26 @@ from .models import Paper
 ANCHOR_TERMS = [
     "visual working memory",
     "working memory",
+    "working memory representation",
     "visual search",
     "fidelity",
     "precision",
     "flexibility",
     "computational model",
+    "computational models",
     "modeling",
+    "modelling",
+    "neural network",
+    "neural networks",
+    "recurrent neural network",
+    "transformer",
+    "deep learning",
+    "artificial intelligence",
+    "ai model",
+    "human memory",
     "predictive coding",
     "egocentric",
     "natural video",
-    "intelligence",
-    "creativity",
-    "structural equation",
 ]
 
 
@@ -39,8 +47,8 @@ def select_papers(papers: list[Paper], keywords: list[str], seen_ids: set[str], 
         paper.matched_terms = terms
         ranked.append(paper)
 
-    ranked.sort(key=lambda p: (p.score, p.year or 0, len(p.abstract)), reverse=True)
-    return ranked[: config.max_papers]
+    ranked.sort(key=lambda p: (p.score, len(p.abstract), p.year or 0), reverse=True)
+    return _diversify_years(ranked, config.max_papers)
 
 
 def score_paper(paper: Paper, keywords: list[str]) -> tuple[float, list[str]]:
@@ -67,9 +75,25 @@ def score_paper(paper: Paper, keywords: list[str]) -> tuple[float, list[str]]:
     if paper.doi:
         score += 0.2
     if paper.year:
-        score += max(0, paper.year - 2020) * 0.05
+        score += 0.15
 
     return score, [term for term, _ in matches.most_common(8)]
+
+
+def _diversify_years(ranked: list[Paper], limit: int) -> list[Paper]:
+    selected: list[Paper] = []
+    year_counts: Counter[int | None] = Counter()
+    for max_per_year in (2, 3, limit):
+        for paper in ranked:
+            if paper in selected:
+                continue
+            if year_counts[paper.year] >= max_per_year:
+                continue
+            selected.append(paper)
+            year_counts[paper.year] += 1
+            if len(selected) == limit:
+                return selected
+    return selected
 
 
 def _token_overlap(seed: str, text: str) -> int:
