@@ -3,12 +3,13 @@ name: Morning paper report
 on:
   workflow_dispatch:
   schedule:
-    # GitHub schedules run in UTC. These entries cover the 8 AM Pacific hour
-    # across daylight saving and standard time. Multiple ticks make the job
-    # resilient to GitHub's occasional top-of-hour schedule delays or drops;
-    # src/main.py exits after one report has been written for the local date.
-    - cron: "0,15,30,45 15 * * 2,5"
-    - cron: "0,15,30,45 16 * * 2,5"
+    # GitHub schedules run in UTC and are often delayed. These off-peak minute
+    # entries cover 8 AM Pacific across daylight saving and standard time while
+    # avoiding noisy duplicate queue pressure from every-15-minute schedule ticks.
+    # src/main.py accepts delayed scheduled runs and exits after one report has
+    # been written for the local date.
+    - cron: "37 15 * * 2,5"
+    - cron: "37 16 * * 2,5"
 
 permissions:
   contents: write
